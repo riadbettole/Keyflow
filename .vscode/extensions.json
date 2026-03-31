@@ -1,0 +1,17 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"github.github-vscode-theme",
+		"hashicorp.terraform",
+		"mikestead.dotenv",
+		"oven.bun-vscode",
+		"pkief.material-icon-theme",
+		"usernamehw.errorlens",
+		"wallabyjs.console-ninja",
+		"wix.vscode-import-cost",
+		"yoavbls.pretty-ts-errors"
+	]
+}

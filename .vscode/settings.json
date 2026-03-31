@@ -1,0 +1,95 @@
+{
+	// =====================================================
+	// Formatting & Linting
+	// =====================================================
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "biomejs.biome",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.biome": "explicit"
+	},
+	// =====================================================
+	// Language-specific formatters
+	// =====================================================
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	// =====================================================
+	// TypeScript
+	// =====================================================
+	"typescript.tsdk": "node_modules/typescript/lib",
+	// =====================================================
+	// Generated / Read-only files
+	// =====================================================
+	"files.readonlyInclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"files.watcherExclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"search.exclude": {
+		"**/routeTree.gen.ts": true,
+		"package.json": false,
+		"biome.json": false
+	},
+	// =====================================================
+	// File Explorer exclusions
+	// =====================================================
+	"files.exclude": {
+		"**/.dockerignore": true,
+		"**/.DS_Store": true,
+		"**/.git": true,
+		"**/.gitignore": true,
+		"**/.tanstack": true,
+		"**/.turbo": true,
+		"**/biome.json": false,
+		"**/bun.lock": true,
+		"**/coverage": true,
+		"**/node_modules": true,
+		"**/routeTree.gen.ts": true,
+		"**/tsconfig.app.json": true,
+		"**/tsconfig.node.json": true,
+		"**/turbo.json": true,
+		"**/lefthook.yml": true,
+		"**/commitlint.config.mjs": true,
+		"**/.github": true,
+	},
+	// =====================================================
+	// Editor UX
+	// =====================================================
+	"editor.smoothScrolling": true,
+	"editor.stickyScroll.enabled": true,
+	"editor.cursorSmoothCaretAnimation": "on",
+	"editor.guides.bracketPairs": "active",
+	"editor.guides.bracketPairsHorizontal": true,
+	"editor.bracketPairColorization.enabled": true,
+	// =====================================================
+	// IntelliSense & Suggestions
+	// =====================================================
+	"editor.quickSuggestionsDelay": 0,
+	"editor.quickSuggestions": {
+		"other": true,
+		"comments": true,
+		"strings": true
+	},
+	// =====================================================
+	// Fonts & Typography
+	// =====================================================
+	"editor.fontFamily": "JetBrainsMono NFM Regular",
+	"editor.fontLigatures": true,
+	"editor.fontSize": 14,
+	"editor.lineHeight": 1.6,
+	// =====================================================
+	// Terminal
+	// =====================================================
+	"terminal.integrated.smoothScrolling": true,
+	"terminal.integrated.scrollback": 10000,
+	"terminal.integrated.fontSize": 16,
+	"terminal.integrated.fontFamily": "JetBrainsMono NFM Regular",
+	"css.lint.unknownAtRules": "ignore",
+	"material-icon-theme.files.associations": {
+		"*.service.ts": "typescript"
+	}
+}

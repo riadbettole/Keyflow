@@ -6,16 +6,43 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!!**/.vscode",
+			"!!**/.dockerignore",
+			"!!**/.DS_Store",
+			"!!**/.git",
+			"!!**/.gitignore",
+			"!!**/.tanstack",
+			"!!**/.turbo",
+			"!!**/biome.json",
+			"!!**/bun.lock",
+			"!!**/coverage",
+			"!!**/node_modules",
+			"!!**/routeTree.gen.ts",
+			"!!**/tsconfig.app.json",
+			"!!**/tsconfig.node.json",
+			"!!**/turbo.json",
+			"!!**/lefthook.yml",
+			"!!**/commitlint.config.mjs",
+			"!!**/.github"
+		]
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineEnding": "crlf"
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": {
+				"useAltText": "off",
+				"noLabelWithoutControl": "off",
+				"useButtonType": "off"
+			}
 		}
 	},
 	"javascript": {
