@@ -1,14 +1,5 @@
 {
 	"name": "api-system-mono",
-	"private": true,
-	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"check": "bunx --bun @biomejs/biome check",
-		"format": "bunx --bun @biomejs/biome format --write",
-		"fix": "bunx --bun @biomejs/biome lint --write",
-		"check-types": "turbo run check-types"
-	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.10",
 		"@commitlint/cli": "^20.5.0",
@@ -22,6 +13,17 @@
 		"node": ">=18"
 	},
 	"packageManager": "bun@1.3.8",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"check": "bunx --bun @biomejs/biome check",
+		"format": "bunx --bun @biomejs/biome format --write",
+		"fix": "bunx --bun @biomejs/biome lint --write",
+		"check-types": "turbo run check-types",
+		"db:push": "turbo run db:push",
+		"db:studio": "turbo run db:studio"
+	},
 	"workspaces": [
 		"apps/*",
 		"packages/*"
