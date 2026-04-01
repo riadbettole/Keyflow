@@ -1,13 +1,14 @@
 import { apiKey } from '@better-auth/api-key'
 import { createDb } from '@keyflow/db'
+import { env } from '@keyflow/env/server'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin, bearer, organization } from 'better-auth/plugins'
 import { createAccessControl } from 'better-auth/plugins/access'
 import Redis from 'ioredis'
 
-const db = createDb(process.env.DATABASE_URL!)
-const redis = new Redis(process.env.REDIS_URL!)
+const db = createDb(env.DATABASE_URL)
+const redis = new Redis(env.REDIS_URL)
 
 const statements = {
 	apiKey: ['create', 'read', 'update', 'delete'],

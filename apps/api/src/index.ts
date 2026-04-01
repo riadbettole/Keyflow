@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import '@keyflow/env/server'
 
 const app = new Hono()
 

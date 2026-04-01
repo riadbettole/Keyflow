@@ -6,6 +6,7 @@
 	"dependencies": {
 		"@better-auth/api-key": "^1.5.6",
 		"@keyflow/db": "*",
+		"@keyflow/env": "*",
 		"better-auth": "^1.5.6",
 		"hono": "^4.12.9",
 		"ioredis": "^5.10.1"
