@@ -1,5 +1,5 @@
 {
-	"name": "api-system-mono",
+	"name": "keyflow",
 	"devDependencies": {
 		"@biomejs/biome": "2.4.10",
 		"@commitlint/cli": "^20.5.0",

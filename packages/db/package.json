@@ -1,6 +1,5 @@
 {
-	"name": "db",
-	"module": "index.ts",
+	"name": "@keyflow/db",
 	"type": "module",
 	"private": true,
 	"exports": {
