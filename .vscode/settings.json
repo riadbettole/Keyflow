@@ -54,7 +54,7 @@
 		"**/turbo.json": true,
 		"**/lefthook.yml": true,
 		"**/commitlint.config.mjs": true,
-		"**/.github": true,
+		"**/.github": true
 	},
 	// =====================================================
 	// Editor UX

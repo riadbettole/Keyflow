@@ -4,7 +4,7 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev",
-		"lint": "bunx --bun @biomejs/biome check",
+		"check": "bunx --bun @biomejs/biome check",
 		"format": "bunx --bun @biomejs/biome format --write",
 		"fix": "bunx --bun @biomejs/biome lint --write",
 		"check-types": "turbo run check-types"

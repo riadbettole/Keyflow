@@ -1,7 +1,7 @@
 pre-commit:
   jobs:
-    - name: lint
-      run: bun run lint
+    - name: check
+      run: bun run check
   
 commit-msg:
   jobs:

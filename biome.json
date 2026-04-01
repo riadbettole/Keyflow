@@ -9,45 +9,48 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!!**/.vscode",
-			"!!**/.dockerignore",
 			"!!**/.DS_Store",
 			"!!**/.git",
-			"!!**/.gitignore",
 			"!!**/.tanstack",
 			"!!**/.turbo",
-			"!!**/biome.json",
 			"!!**/bun.lock",
-			"!!**/coverage",
 			"!!**/node_modules",
-			"!!**/routeTree.gen.ts",
-			"!!**/tsconfig.app.json",
-			"!!**/tsconfig.node.json",
-			"!!**/turbo.json",
-			"!!**/lefthook.yml",
-			"!!**/commitlint.config.mjs",
-			"!!**/.github"
+			"!!apps/frontend/src/routeTree.gen.ts"
 		]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineEnding": "lf"
+		"indentWidth": 2,
+		"lineWidth": 100,
+		"lineEnding": "auto"
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"correctness": {
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error"
+			},
+			"style": {
+				"noDefaultExport": "off",
+				"useImportType": "error"
+			},
+			"suspicious": {
+				"noExplicitAny": "warn"
+			},
 			"a11y": {
-				"useAltText": "off",
 				"noLabelWithoutControl": "off",
+				"useAltText": "off",
 				"useButtonType": "off"
 			}
 		}
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"semicolons": "asNeeded",
+			"quoteStyle": "single"
 		}
 	},
 	"assist": {
@@ -56,6 +59,11 @@
 			"source": {
 				"organizeImports": "on"
 			}
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
 		}
 	}
 }
