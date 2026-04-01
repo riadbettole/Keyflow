@@ -32,7 +32,7 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineEnding": "crlf"
+		"lineEnding": "lf"
 	},
 	"linter": {
 		"enabled": true,
