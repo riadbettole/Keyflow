@@ -1,0 +1,21 @@
+meta {
+  name: Set Active Organization
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3000/api/auth/organization/set-active
+  body: json
+  auth: none
+}
+
+headers {
+  Origin: http://localhost:3000
+}
+
+body:json {
+  {
+    "organizationId": "org-id-from-previous-response"
+  }
+}

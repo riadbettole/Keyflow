@@ -1,0 +1,24 @@
+meta {
+  name: Create API Key
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/trpc/apiKeys.create
+  body: json
+  auth: none
+}
+
+headers {
+  Origin: http://localhost:3000
+}
+
+body:json {
+  {
+    "name": "Test Key",
+    "projectId": "your-project-id-here",
+    "rateLimitMax": 1000,
+    "rateLimitTimeWindow": 3600000
+  }
+}

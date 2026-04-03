@@ -1,0 +1,21 @@
+meta {
+  name: Revoke API Key
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/trpc/apiKeys.revoke
+  body: json
+  auth: none
+}
+
+headers {
+  Origin: http://localhost:3000
+}
+
+body:json {
+  {
+    "keyId": "key-id-here"
+  }
+}

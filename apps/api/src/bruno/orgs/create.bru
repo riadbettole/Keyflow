@@ -1,0 +1,22 @@
+meta {
+  name: Create Organization
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/auth/organization/create
+  body: json
+  auth: none
+}
+
+headers {
+  Origin: http://localhost:3000
+}
+
+body:json {
+  {
+    "name": "Dev Org",
+    "slug": "dev-org"
+  }
+}

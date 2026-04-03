@@ -1,10 +1,9 @@
-import './lib/env'
-
 import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { requestId } from 'hono/request-id'
 import { auth } from './lib/auth'
+import { env } from './lib/env'
 import { errorHandler } from './middleware/error'
 import { requestLogger } from './middleware/logging'
 import { createContext } from './trpc/context'
@@ -20,7 +19,7 @@ const app = new Hono<{ Variables: Variables }>()
 app.use(
 	'/api/auth/*',
 	cors({
-		origin: 'http://localhost:3001',
+		origin: env.FRONTEND_URL,
 		allowHeaders: ['Content-Type', 'Authorization'],
 		allowMethods: ['POST', 'GET', 'OPTIONS'],
 		exposeHeaders: ['Content-Length'],
