@@ -1,0 +1,15 @@
+meta {
+  name: Verify Key (invalid)
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/v1/keys/verify
+  body: none
+  auth: none
+}
+
+headers {
+  x-api-key: kf_thisisafakekey
+}

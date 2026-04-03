@@ -6,6 +6,7 @@ import { auth } from './lib/auth'
 import { env } from './lib/env'
 import { errorHandler } from './middleware/error'
 import { requestLogger } from './middleware/logging'
+import { v1Router } from './routes/v1'
 import { createContext } from './trpc/context'
 import { appRouter } from './trpc/router'
 
@@ -57,6 +58,7 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext: (_, c) => crea
 app.get('/', (c) => {
 	return c.text('Hello Hono!')
 })
+app.route('/v1', v1Router)
 
 app.onError(errorHandler)
 
