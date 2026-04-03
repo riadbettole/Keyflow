@@ -4,6 +4,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin, bearer, organization } from 'better-auth/plugins'
 import { createAccessControl } from 'better-auth/plugins/access'
 import { db } from './db'
+import { env } from './env'
 import { redis } from './redis'
 
 const statements = {
@@ -49,7 +50,7 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 
-	trustedOrigins: ['http://localhost:3000'],
+	trustedOrigins: [env.FRONTEND_URL],
 
 	plugins: [
 		admin(),
