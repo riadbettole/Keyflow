@@ -1,4 +1,5 @@
 import { type AppError, AppErrorException } from '@keyflow/errors'
+import { TRPCError } from '@trpc/server'
 import type { Context } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import { logger } from '../lib/logger'
@@ -25,6 +26,27 @@ export function errorHandler(err: Error, c: Context) {
 		stack: err.stack,
 	})
 
+	if (err instanceof TRPCError) {
+		// try to parse Zod validation errors cleanly
+		let reason: unknown
+		try {
+			reason = JSON.parse(err.message)
+		} catch {
+			reason = err.message
+		}
+
+		return c.json(
+			{
+				ok: false,
+				error: {
+					reason: 'ValidationError',
+					details: reason,
+				},
+			},
+			trpcCodeToStatus(err.code),
+		)
+	}
+
 	if (isAppError(err)) {
 		const status = statusMap[err.error.reason]
 		return c.json({ ok: false, error: err.error }, status)
@@ -38,4 +60,17 @@ export function errorHandler(err: Error, c: Context) {
 
 function isAppError(err: unknown): err is AppErrorException {
 	return err instanceof AppErrorException
+}
+
+function trpcCodeToStatus(code: TRPCError['code']): ContentfulStatusCode {
+	const map: Partial<Record<TRPCError['code'], ContentfulStatusCode>> = {
+		UNAUTHORIZED: 401,
+		FORBIDDEN: 403,
+		NOT_FOUND: 404,
+		BAD_REQUEST: 400,
+		CONFLICT: 409,
+		TOO_MANY_REQUESTS: 429,
+		INTERNAL_SERVER_ERROR: 500,
+	}
+	return map[code] ?? 500
 }
