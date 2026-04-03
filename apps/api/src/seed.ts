@@ -6,7 +6,6 @@ import { logger } from './lib/logger'
 async function seed() {
 	logger.info('Starting seed...')
 
-	// 1. create user
 	await auth.api.signUpEmail({
 		body: {
 			email: 'dev@keyflow.dev',
@@ -15,7 +14,6 @@ async function seed() {
 		},
 	})
 
-	// 2. sign in to get session
 	const session = await auth.api.signInEmail({
 		body: {
 			email: 'dev@keyflow.dev',
@@ -27,7 +25,6 @@ async function seed() {
 		Authorization: `Bearer ${session.token}`,
 	})
 
-	// 3. create org with session
 	await auth.api.createOrganization({
 		body: { name: 'Dev Org', slug: 'dev-org' },
 		headers,

@@ -1,4 +1,4 @@
-import '@keyflow/env/server'
+import './lib/env'
 
 import { trpcServer } from '@hono/trpc-server'
 import { Hono } from 'hono'

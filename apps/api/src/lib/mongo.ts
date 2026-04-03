@@ -1,5 +1,5 @@
-import { env } from '@keyflow/env/server'
 import { MongoClient } from 'mongodb'
+import { env } from './env'
 import { logger } from './logger'
 
 const client = new MongoClient(env.MONGODB_URL)

@@ -22,6 +22,7 @@
         "@keyflow/db": "*",
         "@keyflow/env": "*",
         "@keyflow/errors": "*",
+        "@t3-oss/env-core": "^0.13.11",
         "@trpc/server": "^11.16.0",
         "better-auth": "^1.5.6",
         "hono": "^4.12.9",
@@ -65,9 +66,11 @@
       "name": "@keyflow/db",
       "dependencies": {
         "@keyflow/env": "*",
+        "@t3-oss/env-core": "^0.13.11",
         "dotenv": "^17.3.1",
         "drizzle-orm": "^0.45.2",
         "postgres": "^3.4.8",
+        "zod": "^4.3.6",
       },
       "devDependencies": {
         "@types/bun": "latest",

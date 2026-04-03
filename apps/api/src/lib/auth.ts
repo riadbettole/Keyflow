@@ -49,6 +49,8 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 
+	trustedOrigins: ['http://localhost:3000'],
+
 	plugins: [
 		admin(),
 		organization({

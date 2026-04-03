@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import { env } from '@keyflow/env/db'
 import { defineConfig } from 'drizzle-kit'
+import { env } from './src/env'
 
 export default defineConfig({
 	schema: './src/schema/index.ts',
