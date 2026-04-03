@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import '@keyflow/env/server'
 import { requestId } from 'hono/request-id'
+import { errorHandler } from './middleware/error'
 import { requestLogger } from './middleware/logging'
 
 const app = new Hono()
@@ -11,5 +12,7 @@ app.use('*', requestLogger)
 app.get('/', (c) => {
 	return c.text('Hello Hono!')
 })
+
+app.onError(errorHandler)
 
 export default app
