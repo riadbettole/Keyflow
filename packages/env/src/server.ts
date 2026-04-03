@@ -5,7 +5,7 @@ export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().startsWith('postgresql://'),
 		REDIS_URL: z.string().startsWith('redis://'),
-		MONGODB_URL: z.string().startsWith('redis://'),
+		MONGODB_URL: z.string().startsWith('mongodb://'),
 		BETTER_AUTH_SECRET: z.string(),
 		BETTER_AUTH_URL: z.url(),
 		NODE_ENV: z.string(),
