@@ -8,7 +8,7 @@ export function TestComponent() {
 	if (hello.error) return <div>Error: {hello.error.message}</div>
 
 	return (
-		<div style={{ padding: '1rem', border: '1px solid green' }}>
+		<div className="border-green-400 border-2 p-10">
 			<h1>tRPC Status: Connected!</h1>
 			<pre>{JSON.stringify(hello.data, null, 2)}</pre>
 		</div>
