@@ -2,6 +2,7 @@ import { projectKeys, projects } from '@keyflow/db'
 import { throwError } from '@keyflow/errors'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { audit } from '../../lib/audit'
 import { auth } from '../../lib/auth'
 import { router } from '../init'
 import { orgProcedure } from '../middleware'
@@ -48,6 +49,17 @@ export const apiKeysRouter = router({
 				organizationId: ctx.organizationId,
 				name: input.name,
 				createdBy: ctx.user.id,
+			})
+
+			await audit({
+				userId: ctx.user.id,
+				organizationId: ctx.organizationId,
+				event: {
+					action: 'api_key.created',
+					keyId: result.id,
+					projectId: input.projectId,
+					name: input.name,
+				},
 			})
 
 			return {
@@ -99,6 +111,16 @@ export const apiKeysRouter = router({
 		})
 
 		await ctx.db.delete(projectKeys).where(eq(projectKeys.apiKeyId, input.keyId))
+
+		await audit({
+			userId: ctx.user.id,
+			organizationId: ctx.organizationId,
+			event: {
+				action: 'api_key.revoked',
+				keyId: input.keyId,
+				projectId: projectKey.projectId,
+			},
+		})
 
 		return { success: true }
 	}),

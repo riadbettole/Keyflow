@@ -2,17 +2,19 @@ import { projects } from '@keyflow/db'
 import { throwError } from '@keyflow/errors'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { protectedProcedure, router } from '../init'
+import { audit } from '../../lib/audit'
+import { router } from '../init'
+import { orgProcedure } from '../middleware'
 
 export const projectsRouter = router({
-	list: protectedProcedure.query(async ({ ctx }) => {
+	list: orgProcedure.query(async ({ ctx }) => {
 		return ctx.db.query.projects.findMany({
 			where: eq(projects.organizationId, ctx.session.activeOrganizationId ?? ''),
 			orderBy: (projects, { desc }) => [desc(projects.createdAt)],
 		})
 	}),
 
-	get: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+	get: orgProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
 		const project = await ctx.db.query.projects.findFirst({
 			where: eq(projects.id, input.id),
 		})
@@ -22,7 +24,7 @@ export const projectsRouter = router({
 		return project
 	}),
 
-	create: protectedProcedure
+	create: orgProcedure
 		.input(
 			z.object({
 				name: z.string().min(1).max(100),
@@ -40,10 +42,20 @@ export const projectsRouter = router({
 				})
 				.returning()
 
+			await audit({
+				userId: ctx.user.id,
+				organizationId: ctx.organizationId,
+				event: {
+					action: 'project.created',
+					projectId: project.id,
+					name: project.name,
+				},
+			})
+
 			return project
 		}),
 
-	update: protectedProcedure
+	update: orgProcedure
 		.input(
 			z.object({
 				id: z.string(),
@@ -71,17 +83,24 @@ export const projectsRouter = router({
 			return updated
 		}),
 
-	delete: protectedProcedure
-		.input(z.object({ id: z.string() }))
-		.mutation(async ({ ctx, input }) => {
-			const existing = await ctx.db.query.projects.findFirst({
-				where: eq(projects.id, input.id),
-			})
+	delete: orgProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+		const existing = await ctx.db.query.projects.findFirst({
+			where: eq(projects.id, input.id),
+		})
 
-			if (!existing) throwError({ reason: 'NotFound', resource: 'project' })
+		if (!existing) throwError({ reason: 'NotFound', resource: 'project' })
 
-			await ctx.db.delete(projects).where(eq(projects.id, input.id))
+		await ctx.db.delete(projects).where(eq(projects.id, input.id))
 
-			return { success: true }
-		}),
+		await audit({
+			userId: ctx.user.id,
+			organizationId: ctx.organizationId,
+			event: {
+				action: 'project.deleted',
+				projectId: input.id,
+			},
+		})
+
+		return { success: true }
+	}),
 })
