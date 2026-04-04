@@ -66,7 +66,6 @@ export const auth = betterAuth({
 				configId: 'org-keys',
 				defaultPrefix: 'kf_',
 				references: 'organization',
-				storage: 'secondary-storage',
 			},
 		]),
 		bearer(),
