@@ -1,5 +1,5 @@
 {
-	"name": "backend",
+	"name": "@keyflow/api",
 	"scripts": {
 		"dev": "bun run --hot src/index.ts",
 		"seed": "bun run src/seed.ts"

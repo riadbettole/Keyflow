@@ -29,6 +29,16 @@ app.use(
 	}),
 )
 
+app.use(
+	'/trpc/*',
+	cors({
+		origin: env.FRONTEND_URL,
+		credentials: true,
+		allowMethods: ['GET', 'POST', 'OPTIONS'],
+		allowHeaders: ['Content-Type', 'Authorization', 'x-trpc-source'],
+	}),
+)
+
 app.use('*', requestId())
 app.use('*', requestLogger)
 
