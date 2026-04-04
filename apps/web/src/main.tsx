@@ -5,8 +5,8 @@ import { httpBatchLink } from '@trpc/client'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { routeTree } from './routeTree.gen'
-import { queryClient } from './shared/query'
-import { trpc } from './shared/trpc'
+import { queryClient } from './shared/lib/query'
+import { trpc } from './shared/lib/trpc'
 
 const trpcClient = trpc.createClient({
 	links: [

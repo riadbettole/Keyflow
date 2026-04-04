@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { trpc } from '../../shared/trpc'
+import { trpc } from '../../shared/lib/trpc'
 
 export function TestComponent() {
 	const hello = trpc.health.ping.useQuery()

@@ -7,7 +7,6 @@
 		"module": "ESNext",
 		"types": ["vite/client"],
 		"skipLibCheck": true,
-
 		/* Bundler mode */
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
@@ -15,7 +14,10 @@
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx",
-
+		/* SHADCN */
+		"paths": {
+			"@/*": ["./src/*"]
+		},
 		/* Linting */
 		"strict": true,
 		"noUnusedLocals": true,
