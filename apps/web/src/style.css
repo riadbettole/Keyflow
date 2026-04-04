@@ -1,1 +1,98 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+	/* Fonts */
+	--font-sans: Inter, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+	/* Border radius */
+	--radius-sm: 4px;
+	--radius-md: 6px;
+	--radius-lg: 8px;
+	--radius-xl: 12px;
+
+	/* Gray scale (cool grays H 209) */
+	--color-gray-950: hsl(222, 47%, 6%);
+	--color-gray-900: hsl(217, 33%, 10%);
+	--color-gray-800: hsl(215, 25%, 15%);
+	--color-gray-700: hsl(213, 20%, 22%);
+	--color-gray-600: hsl(211, 17%, 32%);
+	--color-gray-500: hsl(210, 14%, 45%);
+	--color-gray-400: hsl(209, 13%, 58%);
+	--color-gray-300: hsl(209, 15%, 72%);
+	--color-gray-200: hsl(210, 17%, 85%);
+	--color-gray-100: hsl(210, 20%, 93%);
+	--color-gray-50: hsl(210, 25%, 97%);
+
+	/* Primary indigo */
+	--color-indigo-900: hsl(243, 75%, 15%);
+	--color-indigo-800: hsl(243, 75%, 25%);
+	--color-indigo-700: hsl(243, 75%, 35%);
+	--color-indigo-600: hsl(243, 75%, 48%);
+	--color-indigo-500: hsl(243, 75%, 59%);
+	--color-indigo-400: hsl(243, 80%, 68%);
+	--color-indigo-300: hsl(243, 85%, 76%);
+	--color-indigo-200: hsl(243, 88%, 85%);
+	--color-indigo-100: hsl(243, 90%, 93%);
+	--color-indigo-50: hsl(243, 92%, 97%);
+
+	/* Semantic */
+	--color-success: hsl(142, 71%, 45%);
+	--color-success-muted: hsl(142, 40%, 15%);
+	--color-success-text: hsl(142, 60%, 70%);
+	--color-danger: hsl(0, 72%, 51%);
+	--color-danger-muted: hsl(0, 45%, 15%);
+	--color-danger-text: hsl(0, 80%, 72%);
+	--color-warning: hsl(38, 92%, 50%);
+	--color-warning-muted: hsl(38, 60%, 15%);
+	--color-warning-text: hsl(38, 90%, 70%);
+
+	/* Accents */
+	--color-teal: hsl(174, 72%, 56%);
+	--color-amber: hsl(38, 92%, 60%);
+	--color-rose: hsl(350, 89%, 60%);
+}
+
+/* shadcn CSS vars — mapped to our system */
+:root {
+	--background: hsl(222, 47%, 6%);
+	--foreground: hsl(210, 20%, 93%);
+	--card: hsl(215, 25%, 15%);
+	--card-foreground: hsl(210, 20%, 93%);
+	--popover: hsl(215, 25%, 15%);
+	--popover-foreground: hsl(210, 20%, 93%);
+	--primary: hsl(243, 75%, 59%);
+	--primary-foreground: hsl(210, 25%, 97%);
+	--secondary: hsl(215, 25%, 15%);
+	--secondary-foreground: hsl(210, 17%, 85%);
+	--muted: hsl(213, 20%, 22%);
+	--muted-foreground: hsl(209, 13%, 58%);
+	--accent: hsl(243, 75%, 35%);
+	--accent-foreground: hsl(210, 25%, 97%);
+	--destructive: hsl(0, 72%, 51%);
+	--destructive-foreground: hsl(210, 25%, 97%);
+	--border: hsl(213, 20%, 22%);
+	--input: hsl(213, 20%, 22%);
+	--ring: hsl(243, 75%, 59%);
+	--radius: 6px;
+}
+
+/* Base styles */
+* {
+	border-color: var(--border);
+}
+
+body {
+	background-color: var(--background);
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+}
+
+/* Mono font for API keys */
+.font-mono {
+	font-family: var(--font-mono);
+}
