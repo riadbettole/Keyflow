@@ -15,7 +15,7 @@
 			"!!**/.turbo",
 			"!!**/bun.lock",
 			"!!**/node_modules",
-			"!!apps/frontend/src/routeTree.gen.ts"
+			"!!apps/web/src/routeTree.gen.ts"
 		]
 	},
 	"formatter": {
