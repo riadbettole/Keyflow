@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { LoginForm } from '@/features/auth/components/LoginForm'
+import { requireGuest } from '@/shared/lib/auth-guard'
 
 export const Route = createFileRoute('/login')({
+	beforeLoad: () => requireGuest(),
 	component: LoginPage,
 })
 
