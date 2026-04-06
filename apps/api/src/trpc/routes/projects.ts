@@ -3,11 +3,11 @@ import { throwError } from '@keyflow/errors'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { audit } from '../../lib/audit'
-import { router } from '../init'
+import { protectedProcedure, router } from '../init'
 import { orgProcedure } from '../middleware'
 
 export const projectsRouter = router({
-	list: orgProcedure.query(async ({ ctx }) => {
+	list: protectedProcedure.query(async ({ ctx }) => {
 		return ctx.db.query.projects.findMany({
 			where: eq(projects.organizationId, ctx.session.activeOrganizationId ?? ''),
 			orderBy: (projects, { desc }) => [desc(projects.createdAt)],
