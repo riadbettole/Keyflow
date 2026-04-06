@@ -5,6 +5,7 @@ import { auth } from '../../lib/auth'
 import { db } from '../../lib/db'
 import { logger } from '../../lib/logger'
 import { mongo } from '../../lib/mongo'
+import { checkRateLimit } from '../../lib/rate-limiter'
 import { redis } from '../../lib/redis'
 
 export const keysRouter = new Hono()
@@ -16,61 +17,112 @@ keysRouter.post('/verify', async (c) => {
 		return c.json({ valid: false, reason: 'MissingApiKey' }, 401)
 	}
 
-	// check Redis cache first
+	// ---------------------------------------------------
+	// Step 1: resolve key data (cache-aside pattern)
+	// try Redis first, fall back to Postgres if not cached
+	// ---------------------------------------------------
+	type KeyData = {
+		id: string
+		projectId: string | null
+		referenceId: string
+		remaining: number | null
+		expiresAt: string | null
+	}
+
+	let keyData: KeyData | null = null
+
 	const cached = await redis.get(`apikey:${apiKey}`)
+
 	if (cached) {
-		const key = JSON.parse(cached)
-		logger.info({ keyId: key.id }, 'API key verified from cache')
-
-		await logUsage(key, c)
-
-		return c.json({
-			valid: true,
-			keyId: key.id,
-			projectId: key.projectId,
-			organizationId: key.referenceId,
-			remaining: key.remaining,
-			expiresAt: key.expiresAt,
+		keyData = JSON.parse(cached) as KeyData
+		logger.info({ keyId: keyData.id }, 'API key resolved from cache')
+	} else {
+		// cache miss — validate against Better Auth (reads Postgres)
+		const result = await auth.api.verifyApiKey({
+			body: { key: apiKey, configId: 'org-keys' },
 		})
+
+		if (!result.valid || !result.key) {
+			logger.warn({ reason: result.error }, 'API key verification failed')
+			return c.json({ valid: false, reason: result.error ?? 'InvalidApiKey' }, 401)
+		}
+
+		// get our project association from join table
+		const projectKey = await db.query.projectKeys.findFirst({
+			where: eq(projectKeys.apiKeyId, result.key.id),
+		})
+
+		keyData = {
+			id: result.key.id,
+			projectId: projectKey?.projectId ?? null,
+			referenceId: result.key.referenceId,
+			remaining: result.key.remaining,
+			expiresAt: result.key.expiresAt?.toISOString() ?? null,
+		}
+
+		// write to cache — TTL 5 minutes
+		// tradeoff: a revoked key can still pass for up to 5 minutes
+		await redis.set(`apikey:${apiKey}`, JSON.stringify(keyData), 'EX', 300)
+
+		logger.info({ keyId: keyData.id }, 'API key resolved from database and cached')
 	}
 
-	const result = await auth.api.verifyApiKey({
-		body: { key: apiKey, configId: 'org-keys' },
-	})
+	// ---------------------------------------------------
+	// Step 2: sliding window rate limit check
+	// keyed per API key — each key has its own bucket
+	// ---------------------------------------------------
+	const rateLimitResult = await checkRateLimit(
+		`key:${keyData.id}`,
+		3, // 1000 requests
+		60 * 1000, // per hour
+	)
 
-	if (!result.valid || !result.key) {
-		logger.warn({ reason: result.error }, 'API key verification failed')
-		return c.json({ valid: false, reason: result.error ?? 'InvalidApiKey' }, 401)
+	// return rate limit headers
+	// lets the client know how close they are before hitting the wall
+	c.header('X-RateLimit-Limit', String(rateLimitResult.limit))
+	c.header('X-RateLimit-Remaining', String(rateLimitResult.remaining))
+
+	if (!rateLimitResult.allowed) {
+		// Retry-After tells the client exactly how many seconds to wait
+		c.header('Retry-After', String(rateLimitResult.retryAfter))
+
+		logger.warn(
+			{
+				keyId: keyData.id,
+				retryAfter: rateLimitResult.retryAfter,
+			},
+			'Rate limit exceeded',
+		)
+
+		return c.json(
+			{
+				valid: false,
+				reason: 'RateLimitExceeded',
+				retryAfter: rateLimitResult.retryAfter,
+			},
+			429,
+		)
 	}
 
-	const projectKey = await db.query.projectKeys.findFirst({
-		where: eq(projectKeys.apiKeyId, result.key.id),
-	})
+	// ---------------------------------------------------
+	// Step 3: log usage to MongoDB
+	// every successful verify call is recorded
+	// used for dashboard charts and billing
+	// ---------------------------------------------------
+	await logUsage(keyData, c)
 
-	const cacheValue = {
-		id: result.key.id,
-		projectId: projectKey?.projectId ?? null,
-		referenceId: result.key.referenceId,
-		remaining: result.key.remaining,
-		expiresAt: result.key.expiresAt,
-	}
-	await redis.set(`apikey:${apiKey}`, JSON.stringify(cacheValue), 'EX', 300)
-
-	await logUsage(cacheValue, c)
-
-	logger.info({ keyId: result.key.id }, 'API key verified from database')
+	logger.info({ keyId: keyData.id }, 'API key verified successfully')
 
 	return c.json({
 		valid: true,
-		keyId: result.key.id,
-		projectId: cacheValue.projectId,
-		organizationId: result.key.referenceId,
-		remaining: result.key.remaining,
-		expiresAt: result.key.expiresAt,
+		keyId: keyData.id,
+		projectId: keyData.projectId,
+		organizationId: keyData.referenceId,
+		remaining: rateLimitResult.remaining, // from rate limiter, not Better Auth
+		expiresAt: keyData.expiresAt,
 	})
 })
 
-// extracted so both paths use the same logging
 async function logUsage(
 	key: { id: string; projectId: string | null; referenceId: string },
 	c: Context,

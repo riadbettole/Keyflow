@@ -1,4 +1,3 @@
-// apps/api/src/routes/v1/index.ts
 import { Hono } from 'hono'
 import { keysRouter } from './keys'
 
