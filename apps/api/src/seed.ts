@@ -1,5 +1,3 @@
-// apps/api/src/seed.ts
-
 import { auth } from './lib/auth'
 import { logger } from './lib/logger'
 
