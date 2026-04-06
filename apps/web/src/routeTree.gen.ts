@@ -13,6 +13,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DashboardKeysIndexRouteImport } from './routes/dashboard/keys/index'
 import { Route as DashboardAuditIndexRouteImport } from './routes/dashboard/audit/index'
@@ -37,6 +38,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
   id: '/projects/',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
@@ -72,9 +79,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit': typeof DashboardAuditIndexRoute
   '/dashboard/keys': typeof DashboardKeysIndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
@@ -98,6 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit/'
     | '/dashboard/keys/'
@@ -105,9 +114,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit'
     | '/dashboard/keys'
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/register'
+    | '/dashboard/'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit/'
     | '/dashboard/keys/'
@@ -161,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/projects/': {
       id: '/dashboard/projects/'
       path: '/projects'
@@ -193,6 +210,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardProjectsProjectIdRoute: typeof DashboardProjectsProjectIdRoute
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
   DashboardKeysIndexRoute: typeof DashboardKeysIndexRoute
@@ -200,6 +218,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
   DashboardProjectsProjectIdRoute: DashboardProjectsProjectIdRoute,
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
   DashboardKeysIndexRoute: DashboardKeysIndexRoute,
