@@ -13,7 +13,6 @@ export function LoginForm() {
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
-			{/* Error banner */}
 			{error && (
 				<div className="bg-danger-muted border border-danger rounded-md px-4 py-3">
 					<p className="text-danger-text text-sm">
@@ -24,7 +23,6 @@ export function LoginForm() {
 				</div>
 			)}
 
-			{/* Email */}
 			<div className="space-y-1.5">
 				<label htmlFor="email" className="block text-sm font-medium text-gray-200">
 					Email
@@ -48,7 +46,6 @@ export function LoginForm() {
 				/>
 			</div>
 
-			{/* Password */}
 			<div className="space-y-1.5">
 				<label htmlFor="password" className="block text-sm font-medium text-gray-200">
 					Password
@@ -72,7 +69,6 @@ export function LoginForm() {
 				/>
 			</div>
 
-			{/* Submit */}
 			<button
 				type="submit"
 				disabled={loading}

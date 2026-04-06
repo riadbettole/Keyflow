@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useRouter } from '@tanstack/react-router'
-import { signOut } from '../shared/lib/auth'
-import { requireAuth } from '../shared/lib/auth-guard'
+import { useEffect } from 'react'
+import { authClient, signOut } from '../shared/lib/auth'
+import { ensureActiveOrg, requireAuth } from '../shared/lib/auth-guard'
 import { cn } from '../shared/utils/cn'
 
 export const Route = createFileRoute('/dashboard')({
@@ -91,6 +92,24 @@ const navItems = [
 function DashboardLayout() {
 	const router = useRouter()
 
+	useEffect(() => {
+		async function checkSession() {
+			const session = await authClient.getSession()
+
+			if (!session.data) {
+				router.navigate({ to: '/login' })
+				return
+			}
+
+			if (!session.data.session.activeOrganizationId) {
+				await ensureActiveOrg()
+				window.location.reload()
+			}
+		}
+
+		checkSession()
+	}, [router.navigate])
+
 	async function handleSignOut() {
 		await signOut()
 		router.navigate({ to: '/login' })
@@ -98,9 +117,7 @@ function DashboardLayout() {
 
 	return (
 		<div className="min-h-screen bg-gray-950 flex">
-			{/* Sidebar */}
 			<aside className="w-56 shrink-0 bg-gray-900 border-r border-gray-700 flex flex-col">
-				{/* Logo */}
 				<div className="h-14 flex items-center gap-2 px-4 border-b border-gray-700">
 					<div className="w-7 h-7 rounded-md bg-indigo-500 flex items-center justify-center shrink-0">
 						<span className="text-white font-bold text-xs">K</span>
@@ -108,7 +125,6 @@ function DashboardLayout() {
 					<span className="text-gray-100 font-semibold text-sm">Keyflow</span>
 				</div>
 
-				{/* Nav */}
 				<nav className="flex-1 px-2 py-4 space-y-0.5">
 					{navItems.map((item) => (
 						<Link
@@ -132,7 +148,6 @@ function DashboardLayout() {
 					))}
 				</nav>
 
-				{/* Sign out */}
 				<div className="p-2 border-t border-gray-700">
 					<button
 						onClick={handleSignOut}
@@ -155,7 +170,6 @@ function DashboardLayout() {
 				</div>
 			</aside>
 
-			{/* Main */}
 			<main className="flex-1 flex flex-col min-w-0">
 				<header className="h-14 border-b border-gray-700 flex items-center px-6">
 					<p className="text-sm text-gray-400">Dev Org</p>
