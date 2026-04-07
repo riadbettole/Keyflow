@@ -41,11 +41,18 @@ export function ProjectCard({ project, onDelete }: Props) {
 				</button>
 			</div>
 
-			{project.description && (
-				<p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
-					{project.description}
-				</p>
-			)}
+			<div className="min-h-12">
+				{project.description && (
+					<p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+						{project.description}
+					</p>
+				)}
+				{!project.description && (
+					<p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+						{'No description'}
+					</p>
+				)}
+			</div>
 
 			<div className="flex items-center justify-between pt-3 border-t border-gray-800">
 				<span className="text-xs text-gray-600 tabular-nums">

@@ -13,7 +13,7 @@ export function CreateProjectModal({ open, onClose }: Props) {
 
 	if (!open) return null
 
-	async function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault()
 
 		await createProject.mutateAsync({

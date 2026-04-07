@@ -15,7 +15,7 @@ export function CreateKeyModal({ open, projectId, onClose, onCreated }: Props) {
 
 	if (!open) return null
 
-	async function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault()
 
 		const result = await createKey.mutateAsync({

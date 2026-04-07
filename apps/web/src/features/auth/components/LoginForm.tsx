@@ -6,7 +6,7 @@ export function LoginForm() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 
-	function handleSubmit(e: React.FormEvent) {
+	function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault()
 		login({ email, password })
 	}

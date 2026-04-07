@@ -1,3 +1,4 @@
+// apps/web/src/features/billing/components/PlanCard.tsx
 import type { Plan } from '../types'
 import { PLAN_FEATURES } from '../types'
 
@@ -16,29 +17,34 @@ export function PlanCard({ plan, current, onUpgrade, onManage, loading }: Props)
 		<div
 			className={`
       bg-gray-900 border rounded-lg p-6 relative
-      ${current ? 'border-indigo-500' : 'border-gray-700'}
+      ${
+				isPro
+					? 'border-indigo-500/50 bg-linear-to-b from-indigo-500/5 to-transparent'
+					: 'border-gray-700'
+			}
+      ${current ? 'ring-1 ring-indigo-500/30' : ''}
     `}
 		>
 			{current && (
-				<span className="absolute -top-3 left-4 text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-500 text-white">
+				<span className="absolute -top-3 left-4 text-xs font-medium px-2.5 py-0.5 rounded-full bg-indigo-500 text-white">
 					Current plan
 				</span>
 			)}
 
-			<div className="mb-4">
-				<h3 className="text-gray-100 font-semibold text-lg capitalize">{plan}</h3>
-				<p className="text-3xl font-bold text-gray-100 mt-1">
+			<div className="mb-5">
+				<p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{plan}</p>
+				<p className="text-4xl font-bold text-gray-100">
 					{isPro ? '$49' : '$0'}
-					<span className="text-sm font-normal text-gray-400">/month</span>
+					<span className="text-sm font-normal text-gray-500 ml-1">/month</span>
 				</p>
 			</div>
 
-			<ul className="space-y-2 mb-6">
+			<ul className="space-y-2.5 mb-6">
 				{PLAN_FEATURES[plan].map((feature) => (
-					<li key={feature} className="flex items-center gap-2 text-sm text-gray-300">
+					<li key={feature} className="flex items-center gap-2.5 text-sm text-gray-400">
 						<svg
-							width="14"
-							height="14"
+							width="13"
+							height="13"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -57,7 +63,7 @@ export function PlanCard({ plan, current, onUpgrade, onManage, loading }: Props)
 					<button
 						onClick={onManage}
 						disabled={loading}
-						className="w-full py-2 px-4 rounded-md text-sm font-medium bg-gray-800 hover:bg-gray-700 text-gray-200 transition-colors disabled:opacity-50"
+						className="w-full py-2 px-4 rounded-md text-sm font-medium bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors disabled:opacity-50"
 					>
 						{loading ? 'Loading...' : 'Manage subscription'}
 					</button>

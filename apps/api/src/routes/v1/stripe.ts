@@ -10,19 +10,14 @@ import { stripe } from '../../lib/stripe'
 export const stripeRouter = new Hono()
 
 stripeRouter.post('/webhook', async (c) => {
-	console.log('WEBHOOK HIT')
-	console.log('SECRET STARTS WITH:', env.STRIPE_WEBHOOK_SECRET.slice(0, 15))
-	console.log('HAS SIG:', !!c.req.header('stripe-signature'))
-
 	const signature = c.req.header('stripe-signature')
 
 	if (!signature) {
 		return c.json({ error: 'Missing signature' }, 400)
 	}
 
-	// get raw body — Stripe needs the exact bytes to verify signature
 	const rawBody = await c.req.text()
-	console.log('BODY LENGTH:', rawBody.length)
+
 	logger.info(
 		{
 			hasSignature: !!signature,

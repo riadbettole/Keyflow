@@ -22,7 +22,7 @@ export function CreateWebhookModal({ open, onClose, onCreated }: Props) {
 		)
 	}
 
-	async function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
 		e.preventDefault()
 		const result = await createWebhook.mutateAsync({
 			url,
