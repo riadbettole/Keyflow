@@ -4,6 +4,7 @@ import { type Context, Hono } from 'hono'
 import { auth } from '../../lib/auth'
 import { db } from '../../lib/db'
 import { logger } from '../../lib/logger'
+import { apiKeyVerifications, rateLimitHits } from '../../lib/metrics'
 import { mongo } from '../../lib/mongo'
 import { checkRateLimit } from '../../lib/rate-limiter'
 import { redis } from '../../lib/redis'
@@ -45,6 +46,9 @@ keysRouter.post('/verify', async (c) => {
 
 		if (!result.valid || !result.key) {
 			logger.warn({ reason: result.error }, 'API key verification failed')
+
+			apiKeyVerifications.inc({ result: 'invalid' })
+
 			return c.json({ valid: false, reason: result.error ?? 'InvalidApiKey' }, 401)
 		}
 
@@ -84,6 +88,8 @@ keysRouter.post('/verify', async (c) => {
 	c.header('X-RateLimit-Remaining', String(rateLimitResult.remaining))
 
 	if (!rateLimitResult.allowed) {
+		rateLimitHits.inc()
+		apiKeyVerifications.inc({ result: 'rate_limited' })
 		c.header('Retry-After', String(rateLimitResult.retryAfter))
 
 		logger.warn(
@@ -119,6 +125,8 @@ keysRouter.post('/verify', async (c) => {
 	await logUsage(keyData, c)
 
 	logger.info({ keyId: keyData.id }, 'API key verified successfully')
+
+	apiKeyVerifications.inc({ result: 'valid' })
 
 	return c.json({
 		valid: true,
