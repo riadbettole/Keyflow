@@ -39,6 +39,10 @@ app.use(
 	}),
 )
 
+// v1 routes go BEFORE global middleware
+// Stripe webhook needs raw body — no middleware should touch it first
+app.route('/v1', v1Router)
+
 app.use('*', requestId())
 app.use('*', requestLogger)
 
@@ -68,7 +72,6 @@ app.use('/trpc/*', trpcServer({ router: appRouter, createContext: (_, c) => crea
 app.get('/', (c) => {
 	return c.text('Hello Hono!')
 })
-app.route('/v1', v1Router)
 
 app.onError(errorHandler)
 
