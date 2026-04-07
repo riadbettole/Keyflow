@@ -1,4 +1,5 @@
 export * from './auth'
+export * from './processed-events'
 export * from './projects'
 export * from './subscriptions'
 export * from './webhooks'
