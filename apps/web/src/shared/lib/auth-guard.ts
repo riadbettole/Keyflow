@@ -25,10 +25,11 @@ export async function requireGuest() {
 
 export async function ensureActiveOrg() {
 	const orgs = await authClient.organization.list()
-
 	if (!orgs.data || orgs.data.length === 0) return
 
 	await authClient.organization.setActive({
 		organizationId: orgs.data[0].id,
 	})
+
+	await authClient.getSession({ fetchOptions: { cache: 'no-store' } })
 }

@@ -17,6 +17,7 @@ export async function createContext(c: HonoContext) {
 		requestId: c.get('requestId'),
 		user: c.get('user') as AuthUser | null,
 		session: c.get('session') as AuthSession | null,
+		headers: c.req.raw.headers,
 	}
 }
 

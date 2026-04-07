@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardWebhooksIndexRouteImport } from './routes/dashboard/webhooks/index'
+import { Route as DashboardTeamIndexRouteImport } from './routes/dashboard/team/index'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DashboardKeysIndexRouteImport } from './routes/dashboard/keys/index'
 import { Route as DashboardBillingIndexRouteImport } from './routes/dashboard/billing/index'
@@ -36,6 +39,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcceptInviteRoute = AcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +57,16 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
 const DashboardWebhooksIndexRoute = DashboardWebhooksIndexRouteImport.update({
   id: '/webhooks/',
   path: '/webhooks/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTeamIndexRoute = DashboardTeamIndexRouteImport.update({
+  id: '/team/',
+  path: '/team/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
@@ -80,6 +98,7 @@ const DashboardProjectsProjectIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -89,10 +108,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/dashboard/team/': typeof DashboardTeamIndexRoute
   '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -101,11 +123,14 @@ export interface FileRoutesByTo {
   '/dashboard/billing': typeof DashboardBillingIndexRoute
   '/dashboard/keys': typeof DashboardKeysIndexRoute
   '/dashboard/projects': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
+  '/dashboard/team': typeof DashboardTeamIndexRoute
   '/dashboard/webhooks': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -115,12 +140,15 @@ export interface FileRoutesById {
   '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/dashboard/team/': typeof DashboardTeamIndexRoute
   '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accept-invite'
     | '/dashboard'
     | '/login'
     | '/register'
@@ -130,10 +158,13 @@ export interface FileRouteTypes {
     | '/dashboard/billing/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
+    | '/dashboard/settings/'
+    | '/dashboard/team/'
     | '/dashboard/webhooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accept-invite'
     | '/login'
     | '/register'
     | '/dashboard'
@@ -142,10 +173,13 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/keys'
     | '/dashboard/projects'
+    | '/dashboard/settings'
+    | '/dashboard/team'
     | '/dashboard/webhooks'
   id:
     | '__root__'
     | '/'
+    | '/accept-invite'
     | '/dashboard'
     | '/login'
     | '/register'
@@ -155,11 +189,14 @@ export interface FileRouteTypes {
     | '/dashboard/billing/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
+    | '/dashboard/settings/'
+    | '/dashboard/team/'
     | '/dashboard/webhooks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceptInviteRoute: typeof AcceptInviteRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
@@ -188,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/accept-invite': {
+      id: '/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/accept-invite'
+      preLoaderRoute: typeof AcceptInviteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -207,6 +251,20 @@ declare module '@tanstack/react-router' {
       path: '/webhooks'
       fullPath: '/dashboard/webhooks/'
       preLoaderRoute: typeof DashboardWebhooksIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/team/': {
+      id: '/dashboard/team/'
+      path: '/team'
+      fullPath: '/dashboard/team/'
+      preLoaderRoute: typeof DashboardTeamIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/settings'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/projects/': {
@@ -254,6 +312,8 @@ interface DashboardRouteChildren {
   DashboardBillingIndexRoute: typeof DashboardBillingIndexRoute
   DashboardKeysIndexRoute: typeof DashboardKeysIndexRoute
   DashboardProjectsIndexRoute: typeof DashboardProjectsIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+  DashboardTeamIndexRoute: typeof DashboardTeamIndexRoute
   DashboardWebhooksIndexRoute: typeof DashboardWebhooksIndexRoute
 }
 
@@ -264,6 +324,8 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardBillingIndexRoute: DashboardBillingIndexRoute,
   DashboardKeysIndexRoute: DashboardKeysIndexRoute,
   DashboardProjectsIndexRoute: DashboardProjectsIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+  DashboardTeamIndexRoute: DashboardTeamIndexRoute,
   DashboardWebhooksIndexRoute: DashboardWebhooksIndexRoute,
 }
 
@@ -273,6 +335,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceptInviteRoute: AcceptInviteRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,

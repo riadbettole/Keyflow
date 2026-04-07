@@ -101,12 +101,9 @@ export const apiKeysRouter = router({
 		if (!projectKey) throwError({ reason: 'NotFound', resource: 'api key' })
 
 		await auth.api.deleteApiKey({
-			body: {
-				configId: 'org-keys',
-				keyId: input.keyId,
-			},
+			body: { configId: 'org-keys', keyId: input.keyId },
 			headers: new Headers({
-				Authorization: `Bearer ${ctx.session.token}`, // fix this
+				Authorization: `Bearer ${ctx.session.token}`,
 			}),
 		})
 
@@ -115,11 +112,7 @@ export const apiKeysRouter = router({
 		await audit({
 			userId: ctx.user.id,
 			organizationId: ctx.organizationId,
-			event: {
-				action: 'api_key.revoked',
-				keyId: input.keyId,
-				projectId: projectKey.projectId,
-			},
+			event: { action: 'api_key.revoked', keyId: input.keyId, projectId: projectKey.projectId },
 		})
 
 		return { success: true }

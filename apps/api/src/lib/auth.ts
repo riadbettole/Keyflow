@@ -5,6 +5,7 @@ import { admin, bearer, organization } from 'better-auth/plugins'
 import { createAccessControl } from 'better-auth/plugins/access'
 import { db } from './db'
 import { env } from './env'
+import { logger } from './logger'
 import { redis } from './redis'
 
 const statements = {
@@ -52,6 +53,14 @@ export const auth = betterAuth({
 
 	trustedOrigins: [env.FRONTEND_URL],
 
+	user: {
+		deleteUser: {
+			enabled: true,
+			afterDelete: async (user) => {
+				await deleteAll(user)
+			},
+		},
+	},
 	plugins: [
 		admin(),
 		organization({
@@ -59,6 +68,17 @@ export const auth = betterAuth({
 			roles: {
 				admin: adminRole,
 				member: memberRole,
+			},
+			allowUserToCreateOrganization: true,
+			async sendInvitationEmail(data) {
+				logger.info(
+					{
+						invitedEmail: data.email,
+						organizationName: data.organization.name,
+						inviteId: data.invitation.id,
+					},
+					'Invitation created',
+				)
 			},
 		}),
 		apiKey([
@@ -71,3 +91,23 @@ export const auth = betterAuth({
 		bearer(),
 	],
 })
+
+async function deleteAll(user: {
+	id: string
+	createdAt: Date
+	updatedAt: Date
+	email: string
+	emailVerified: boolean
+	name: string
+	image?: string | null | undefined
+}) {
+	const { db } = await import('./db')
+	const { mongo } = await import('./mongo')
+	const { projectKeys } = await import('@keyflow/db')
+	const { eq } = await import('drizzle-orm')
+
+	await db.delete(projectKeys).where(eq(projectKeys.createdBy, user.id))
+
+	await mongo.collection('audit_logs').deleteMany({ userId: user.id })
+	await mongo.collection('usage_logs').deleteMany({ userId: user.id })
+}
