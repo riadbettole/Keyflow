@@ -12,9 +12,12 @@ export function KeysTable({ keys, onRevoke, isRevoking }: Props) {
 			<table className="w-full">
 				<thead>
 					<tr className="border-b border-gray-800">
-						<th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Name</th>
-						<th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Key</th>
-						<th className="text-left text-xs font-medium text-gray-500 px-4 py-3">Created</th>
+						<th className="text-left text-xs font-medium text-gray-500 px-4 py-3 uppercase tracking-wide">
+							Name
+						</th>
+						<th className="text-left text-xs font-medium text-gray-500 px-4 py-3 uppercase tracking-wide">
+							Key
+						</th>
 						<th className="px-4 py-3" />
 					</tr>
 				</thead>
@@ -22,23 +25,20 @@ export function KeysTable({ keys, onRevoke, isRevoking }: Props) {
 					{keys.map((key) => (
 						<tr key={key.id} className="group hover:bg-gray-800/40 transition-colors">
 							<td className="px-4 py-3">
-								<span className="text-sm text-gray-200 font-medium">{key.name}</span>
+								<p className="text-sm font-medium text-gray-200">{key.name}</p>
+								<p className="text-xs text-gray-500 mt-0.5 tabular-nums">
+									{new Date(key.createdAt).toLocaleDateString('en-US', {
+										month: 'short',
+										day: 'numeric',
+										year: 'numeric',
+									})}
+								</p>
 							</td>
 
 							<td className="px-4 py-3">
 								<code className="text-xs font-mono text-gray-400 bg-gray-800 px-2 py-1 rounded">
 									kf_••••••••••••
 								</code>
-							</td>
-
-							<td className="px-4 py-3">
-								<span className="text-sm text-gray-500">
-									{new Date(key.createdAt).toLocaleDateString('en-US', {
-										month: 'short',
-										day: 'numeric',
-										year: 'numeric',
-									})}
-								</span>
 							</td>
 
 							<td className="px-4 py-3 text-right">
