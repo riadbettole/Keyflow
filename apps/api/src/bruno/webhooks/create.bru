@@ -1,0 +1,22 @@
+meta {
+  name: Create Webhook
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/trpc/webhooks.create
+  body: json
+  auth: none
+}
+
+headers {
+  Origin: http://localhost:3000
+}
+
+body:json {
+  {
+    "url": "https://webhook.site/1e025298-93bd-4b8b-a306-c1bc577f49a5",
+    "events": ["key.rate_limit_exceeded"]
+  }
+}
