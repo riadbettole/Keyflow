@@ -1,166 +1,86 @@
 # Keyflow
 
-> A developer platform for issuing API keys, tracking usage, and managing access — built with production-grade architecture.
+>A platform for issuing API keys, tracking usage, and managing developer access. Think of it as the infrastructure layer between your API and your users.
 
-## What is Keyflow?
+![Dashboard](.github/assets/01-dashboard.png)
 
-Keyflow is a platform that lets developers monetize and manage their APIs.
+---
 
-Think of it as the infrastructure layer between your API and your users. Instead of building auth, rate limiting, usage tracking, and billing yourself, you integrate Keyflow and get all of it out of the box.
+## The idea
 
-### The core story
+You built an API. Now you need to give users access to it, track how many requests they make, rate limit them, get notified when things happen, and eventually charge them. Keyflow handles all of that so you don't have to build it yourself.
 
-You built an AI image generation API. You want to:
-- Give users access via API keys
-- Track how many requests each user makes  
-- Rate limit them based on their plan
-- Get notified when usage thresholds are hit
-- See everything in a clean dashboard
+## Screenshots
 
-That's exactly what Keyflow does.
+![Projects](.github/assets/02-projects.png)
+![Audit Log](.github/assets/03-audit-log.png)
+![Grafana](.github/assets/10-grafana.png)
+![Billing](.github/assets/05-billing.png)
 
-### User stories
-
-**As an API developer (you):**
-- I can create projects and generate API keys for them
-- I can see how many requests each key has made
-- I can set rate limits per key
-- I can receive webhooks when usage thresholds are hit
-- I can manage my team with role-based access
-- I can charge users via Stripe based on usage
-
-**As an API consumer (your users):**
-- I receive an API key to authenticate my requests
-- I get clear errors when I exceed my rate limit
-- I can see my own usage
-
-## Architecture
+## Integrate in one line
+```bash
+npm install @keyflow/sdk
 ```
-Client Dashboard (React + Vite)
-          ↓
-    API Gateway (Hono)
-          ↓
-    ┌─────┴──────────┐
-  tRPC            REST /v1
-(dashboard)     (SDK + CLI)
-    └─────┬──────────┘
-          ↓
-    Core Services
-    ├── Auth (Better Auth)
-    ├── API Key Management
-    ├── Rate Limiting
-    ├── Usage Tracking
-    ├── Webhooks
-    └── Billing (Stripe)
-          ↓
-  ┌───────┼───────┐
-Postgres Redis  MongoDB
+```ts
+import { KeyflowClient } from '@keyflow/sdk'
+
+const keyflow = new KeyflowClient({ baseUrl: 'https://your-keyflow.com' })
+
+app.use(async (req, res, next) => {
+  const result = await keyflow.keys.verify(req.headers['x-api-key'])
+  if (!result.valid) return res.status(401).json({ error: result.reason })
+  next()
+})
 ```
 
-## Key engineering decisions
+## How it works
+React Dashboard
+↓
+Hono API (tRPC for dashboard, REST /v1 for SDK and CLI)
+↓
+Postgres    Redis    MongoDB
+↓
+Prometheus + Grafana
 
-### Cache-aside for API key validation
-Every inbound request validates an API key. Hitting Postgres on every request creates a bottleneck at scale. Keys are cached in Redis with a 5 minute TTL — cache hit means microsecond validation, cache miss falls through to Postgres. If Redis goes down the system degrades gracefully, never breaks.
+## Engineering decisions worth knowing
 
-### Two separate MongoDB collections
-`usage_logs` captures every verify call for billing and charts. `audit_logs` captures user actions (key created, key revoked) for accountability. They answer different questions and grow at different rates — merging them would be the wrong tradeoff.
+**Rate limiting** uses a sliding window in Redis sorted sets rather than a fixed counter. Fixed counters have a burst vulnerability at reset boundaries — sliding windows don't.
 
-### Rate limiting with sliding window
-Instead of a simple counter, Keyflow uses a sliding window algorithm in Redis. This prevents burst abuse at window boundaries — a known weakness of fixed window rate limiting.
+**API key validation** follows a cache-aside pattern. Keys are cached in Redis for 5 minutes so validation is microseconds, not a database roundtrip. If Redis goes down, it falls back to Postgres gracefully.
 
-### RBAC with organization-scoped ownership
-API keys belong to organizations, not individuals. Team members have explicit typed roles (admin, member). When someone leaves a company their keys don't disappear — the org owns them.
+**Webhook delivery** signs every payload with HMAC-SHA256 and retries failed deliveries with exponential backoff. Every attempt is logged.
 
-### REST + tRPC dual layer
-tRPC serves the dashboard frontend with full end-to-end type safety. REST `/v1` serves the SDK and CLI — external developers can't import your tRPC router so they get a clean versioned HTTP API. Same backend, two interfaces, each suited to its consumer.
+**Stripe idempotency** stores every processed event ID. Stripe can deliver the same webhook twice — Keyflow won't process it twice.
 
-### Idempotency on payments (coming)
-Stripe webhooks can deliver the same event multiple times. Every payment operation will use an idempotency key so duplicate events produce no duplicate effect.
+**Two MongoDB collections** — usage_logs for every request (high volume, for charts and billing) and audit_logs for user actions (low volume, for accountability). They answer different questions.
 
-## Tech stack
+## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, Vite, TanStack Router |
-| Backend | Hono, tRPC, Better Auth |
-| ORM | Drizzle |
-| Primary DB | PostgreSQL |
-| Cache | Redis |
-| Document store | MongoDB |
-| Payments | Stripe (coming) |
-| Infra | Docker, AWS, Terraform (coming) |
-| Tooling | Turborepo, Bun, Biome, GitHub Actions |
-
-## Project structure
-```
-apps/
-  api/          → Hono backend (tRPC + REST)
-  web/          → React dashboard (coming)
-
-packages/
-  db/           → Drizzle schema + migrations
-  errors/       → Shared error types and Result pattern
-  env/          → t3-env validated environment variables
-
-tools/
-  cli/          → CLI tool (coming)
-```
+Bun, Hono, tRPC, Better Auth, Drizzle, PostgreSQL, Redis, MongoDB, Stripe, Prometheus, Grafana, React, Vite, TanStack Router, Turborepo, Biome
 
 ## Running locally
 
-**Prerequisites:** Bun, Docker
+You need Bun and Docker.
 ```bash
-# clone
 git clone https://github.com/riadbettole/keyflow
-
-# install
+cd keyflow
 bun install
-
-# start databases
 docker compose up -d
-
-# environment
 cp apps/api/.env.example apps/api/.env
-
-# push schema
 bun db:push
-
-# start
 bun dev
 ```
 
-## API
+Dashboard at localhost:5173, API at localhost:3000, Grafana at localhost:3001.
 
-### Verify an API key
+## CLI
+```bash
+keyflow login --url https://your-keyflow.com --token your-token
+keyflow keys list
+keyflow keys verify --key kf_xxx
 ```
-POST /v1/keys/verify
-x-api-key: kf_your_key_here
-```
-```json
-{
-  "valid": true,
-  "keyId": "...",
-  "projectId": "...",
-  "organizationId": "...",
-  "remaining": 950,
-  "expiresAt": null
-}
-```
+![CLI](.github/assets/11-cli.png)
 
-## Roadmap
+## What's next
 
-- [x] Monorepo + tooling (Turborepo, Bun, Biome, CI)
-- [x] Auth with organization RBAC (Better Auth)
-- [x] Database layer (Drizzle + Postgres)
-- [x] Local infrastructure (Docker — Postgres, Redis, MongoDB)
-- [x] API key management (create, list, revoke)
-- [x] Key verification with Redis cache-aside
-- [x] Usage tracking (MongoDB)
-- [x] Audit logs (MongoDB)
-- [ ] Rate limiting (sliding window)
-- [ ] Dashboard (React)
-- [ ] Webhooks
-- [ ] Billing (Stripe)
-- [ ] SDK
-- [ ] CLI
-- [ ] Terraform + AWS
+Terraform on AWS, usage-based billing metering, email notifications, scoped API key permissions.
