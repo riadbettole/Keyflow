@@ -1,3 +1,4 @@
+// apps/web/src/routes/dashboard/audit.tsx
 import { createFileRoute } from '@tanstack/react-router'
 import { trpc } from '@/shared/lib/trpc'
 
@@ -12,32 +13,53 @@ const actionLabel: Record<string, string> = {
 	'api_key.revoked': 'Revoked API key',
 }
 
-const actionColor: Record<string, string> = {
-	'project.created': 'text-indigo-400 bg-indigo-500/10',
-	'project.deleted': 'text-danger-text bg-danger-muted',
-	'api_key.created': 'text-success-text bg-success-muted',
-	'api_key.revoked': 'text-warning-text bg-warning-muted',
+const actionAccent: Record<string, string> = {
+	'project.created': 'bg-indigo-500',
+	'project.deleted': 'bg-danger',
+	'api_key.created': 'bg-success',
+	'api_key.revoked': 'bg-warning',
+}
+
+function formatDateSeparator(date: Date): string {
+	const today = new Date()
+	const yesterday = new Date(today)
+	yesterday.setDate(yesterday.getDate() - 1)
+
+	if (date.toDateString() === today.toDateString()) return 'Today'
+	if (date.toDateString() === yesterday.toDateString()) return 'Yesterday'
+
+	return date.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric',
+	})
 }
 
 function AuditPage() {
 	const { data: logs, isLoading } = trpc.audit.list.useQuery({ limit: 100 })
 
+	// group logs by date
+	const grouped = logs?.reduce<Record<string, typeof logs>>((acc, log) => {
+		const dateKey = new Date(log.timestamp).toDateString()
+		if (!acc[dateKey]) acc[dateKey] = []
+		acc[dateKey].push(log)
+		return acc
+	}, {})
+
 	return (
 		<div className="max-w-3xl">
-			{/* Header */}
 			<div className="mb-8">
 				<h1 className="text-xl font-semibold text-gray-100">Audit Log</h1>
-				<p className="text-sm text-gray-400 mt-0.5">Every important action in your organization</p>
+				<p className="text-sm text-gray-500 mt-0.5">Every important action in your organization</p>
 			</div>
 
-			{/* Timeline */}
 			{isLoading ? (
 				<div className="space-y-3">
 					{[...Array(5)].map((_, i) => (
 						<div
-							// biome-ignore lint/suspicious/noArrayIndexKey: <Static element is okay>
+							// biome-ignore lint/suspicious/noArrayIndexKey: <static comp>
 							key={i}
-							className="bg-gray-900 border border-gray-800 rounded-lg h-16 animate-pulse"
+							className="bg-gray-900 border border-gray-800 rounded-lg h-14 animate-pulse"
 						/>
 					))}
 				</div>
@@ -63,41 +85,54 @@ function AuditPage() {
 					</p>
 				</div>
 			) : (
-				<div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-					<div className="divide-y divide-gray-800">
-						{logs.map((log) => (
-							<div
-								key={String(log._id)}
-								className="flex items-center gap-4 px-4 py-3.5 hover:bg-gray-800/40 transition-colors"
-							>
-								{/* Action badge */}
-								<span
-									className={`
-                    shrink-0 text-xs font-medium px-2 py-1 rounded-md
-                    ${actionColor[log.action] ?? 'text-gray-400 bg-gray-800'}
-                  `}
-								>
-									{actionLabel[log.action] ?? log.action}
+				<div className="space-y-6">
+					{Object.entries(grouped ?? {}).map(([dateKey, dateLogs]) => (
+						<div key={dateKey}>
+							{/* Date separator */}
+							<div className="flex items-center gap-3 mb-3">
+								<span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+									{formatDateSeparator(new Date(dateKey))}
 								</span>
-
-								{/* Details */}
-								<div className="flex-1 min-w-0">
-									{log.name && <p className="text-sm text-gray-300 truncate">{log.name}</p>}
-								</div>
-
-								{/* Timestamp */}
-								<span className="text-xs text-gray-600 shrink-0">
-									{new Date(log.timestamp).toLocaleDateString('en-US', {
-										month: 'short',
-										day: 'numeric',
-										year: 'numeric',
-										hour: '2-digit',
-										minute: '2-digit',
-									})}
-								</span>
+								<div className="flex-1 h-px bg-gray-800" />
 							</div>
-						))}
-					</div>
+
+							{/* Events for this day */}
+							<div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+								<div className="divide-y divide-gray-800">
+									{dateLogs.map((log) => (
+										<div
+											key={String(log._id)}
+											className="flex items-center gap-4 px-4 py-3.5 hover:bg-gray-800/40 transition-colors"
+										>
+											{/* Left accent line */}
+											<div
+												className={`
+                        w-0.5 h-8 rounded-full shrink-0
+                        ${actionAccent[log.action] ?? 'bg-gray-700'}
+                      `}
+											/>
+
+											<div className="flex-1 min-w-0">
+												<p className="text-sm font-medium text-gray-200">
+													{actionLabel[log.action] ?? log.action}
+												</p>
+												{log.name && (
+													<p className="text-xs text-gray-500 mt-0.5 truncate">{log.name}</p>
+												)}
+											</div>
+
+											<span className="text-xs text-gray-600 shrink-0 tabular-nums">
+												{new Date(log.timestamp).toLocaleTimeString('en-US', {
+													hour: '2-digit',
+													minute: '2-digit',
+												})}
+											</span>
+										</div>
+									))}
+								</div>
+							</div>
+						</div>
+					))}
 				</div>
 			)}
 		</div>
