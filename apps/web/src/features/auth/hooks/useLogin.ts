@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router'
 import { useState } from 'react'
-import { signIn } from '@/shared/lib/auth'
+import { authClient, signIn } from '@/shared/lib/auth'
 import type { AuthError, LoginInput } from '../types'
 
 export function useLogin() {
@@ -21,6 +21,13 @@ export function useLogin() {
 			setError('INVALID_CREDENTIALS')
 			setLoading(false)
 			return
+		}
+
+		const orgs = await authClient.organization.list()
+		if (orgs.data && orgs.data.length > 0) {
+			await authClient.organization.setActive({
+				organizationId: orgs.data[0].id,
+			})
 		}
 
 		router.navigate({ to: '/dashboard' })

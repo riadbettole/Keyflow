@@ -78,7 +78,7 @@ keysRouter.post('/verify', async (c) => {
 	// ---------------------------------------------------
 	const rateLimitResult = await checkRateLimit(
 		`key:${keyData.id}`,
-		3, // 1000 requests
+		1000, // 1000 requests
 		60 * 1000, // per hour
 	)
 
