@@ -4,6 +4,7 @@ import { auditRouter } from './routes/audit'
 import { healthRouter } from './routes/health'
 import { projectsRouter } from './routes/projects'
 import { statsRouter } from './routes/stats'
+import { webhooksRouter } from './routes/webhook'
 
 export const appRouter = router({
 	health: healthRouter,
@@ -11,6 +12,7 @@ export const appRouter = router({
 	apiKeys: apiKeysRouter,
 	audit: auditRouter,
 	stats: statsRouter,
+	webhooks: webhooksRouter,
 })
 
 export type AppRouter = typeof appRouter
