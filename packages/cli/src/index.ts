@@ -16,7 +16,8 @@ program
 	.command('login')
 	.description('Authenticate with your Keyflow instance')
 	.requiredOption('--url <url>', 'Keyflow instance URL')
-	.requiredOption('--token <token>', 'Your session token')
+	.requiredOption('--email <email>', 'Your email address')
+	.requiredOption('--password <password>', 'Your password')
 	.action((options) => loginCommand(options))
 
 // keyflow keys

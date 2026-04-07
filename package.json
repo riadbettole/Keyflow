@@ -22,7 +22,8 @@
 		"fix": "bunx --bun @biomejs/biome lint --write",
 		"check-types": "turbo run check-types",
 		"db:push": "turbo run db:push",
-		"db:studio": "turbo run db:studio"
+		"db:studio": "turbo run db:studio",
+		"cli": "bun run packages/cli/src/index.ts"
 	},
 	"workspaces": [
 		"apps/*",

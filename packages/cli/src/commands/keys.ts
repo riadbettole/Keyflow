@@ -1,4 +1,3 @@
-import { KeyflowClient } from '@keyflow/sdk'
 import ora from 'ora'
 import { getConfig } from '../lib/config'
 import { log, table } from '../lib/output'
@@ -14,22 +13,33 @@ type KeyRow = {
 async function getClientAndConfig() {
 	const config = await getConfig()
 	if (!config) {
-		log.error('Not logged in. Run: keyflow login --url <url> --token <token>')
+		log.error('Not logged in.')
 		process.exit(1)
 	}
-	const client = new KeyflowClient({ baseUrl: config.baseUrl })
-	return { client, config }
+
+	await fetch(`${config.baseUrl}/v1/auth/activate`, {
+		method: 'POST',
+		headers: { Authorization: `Bearer ${config.token}` },
+	}).catch(() => {})
+
+	return config
 }
 
 export async function keysListCommand() {
 	const spinner = ora('Fetching keys...').start()
 
 	try {
-		const { config } = await getClientAndConfig()
+		const config = await getConfig()
+		if (!config) {
+			log.error(
+				'Not logged in. Run: keyflow login --url <url> --email <email> --password <password>',
+			)
+			process.exit(1)
+		}
 
-		const res = await fetch(`${config.baseUrl}/trpc/apiKeys.list`, {
+		const res = await fetch(`${config.baseUrl}/trpc/apiKeys.listAll`, {
 			headers: {
-				cookie: `better-auth.session_token=${config.token}`,
+				Authorization: `Bearer ${config.token}`,
 			},
 		})
 
@@ -62,8 +72,24 @@ export async function keysVerifyCommand(key: string) {
 	const spinner = ora('Verifying key...').start()
 
 	try {
-		const { client } = await getClientAndConfig()
-		const result = await client.keys.verify(key)
+		const config = await getClientAndConfig()
+
+		const res = await fetch(`${config.baseUrl}/v1/keys/verify`, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${config.token}`,
+				'x-api-key': key,
+			},
+		})
+
+		const result = (await res.json()) as {
+			valid: boolean
+			keyId?: string
+			organizationId?: string
+			remaining?: number
+			reason?: string
+			retryAfter?: number
+		}
 
 		spinner.stop()
 

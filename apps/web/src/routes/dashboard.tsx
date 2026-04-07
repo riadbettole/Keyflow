@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useRouter } from '@tanstack/react-router
 import { useEffect } from 'react'
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary'
 import { authClient, signOut } from '../shared/lib/auth'
-import { ensureActiveOrg, requireAuth } from '../shared/lib/auth-guard'
+import { requireAuth } from '../shared/lib/auth-guard'
 import { cn } from '../shared/utils/cn'
 
 export const Route = createFileRoute('/dashboard')({
@@ -187,7 +187,6 @@ function DashboardLayout() {
 			}
 
 			if (!session.data.session.activeOrganizationId) {
-				await ensureActiveOrg()
 				window.location.reload()
 			}
 		}

@@ -8,21 +8,16 @@ export async function requireAuth() {
 		throw redirect({ to: '/login' })
 	}
 
-	if (!session.data.session.activeOrganizationId) {
-		await ensureActiveOrg()
-		window.location.reload()
-	}
+	// auto-set active org using the session token
+	await fetch(`${import.meta.env.VITE_API_URL}/v1/auth/activate`, {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${session.data.session.token}`,
+		},
+		credentials: 'include',
+	})
 
 	return session.data
-}
-
-export async function ensureActiveOrg() {
-	const orgs = await authClient.organization.list()
-	if (!orgs.data || orgs.data.length === 0) return
-
-	await authClient.organization.setActive({
-		organizationId: orgs.data[0].id,
-	})
 }
 
 export async function requireGuest() {

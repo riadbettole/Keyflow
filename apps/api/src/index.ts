@@ -41,6 +41,15 @@ app.use(
 
 // v1 routes go BEFORE global middleware
 // Stripe webhook needs raw body — no middleware should touch it first
+app.use(
+	'/v1/*',
+	cors({
+		origin: env.FRONTEND_URL,
+		credentials: true,
+		allowMethods: ['GET', 'POST', 'OPTIONS'],
+		allowHeaders: ['Content-Type', 'Authorization'],
+	}),
+)
 app.route('/v1', v1Router)
 
 app.use('*', requestId())
