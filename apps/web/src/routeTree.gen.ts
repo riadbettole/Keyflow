@@ -17,6 +17,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardWebhooksIndexRouteImport } from './routes/dashboard/webhooks/index'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DashboardKeysIndexRouteImport } from './routes/dashboard/keys/index'
+import { Route as DashboardBillingIndexRouteImport } from './routes/dashboard/billing/index'
 import { Route as DashboardAuditIndexRouteImport } from './routes/dashboard/audit/index'
 import { Route as DashboardProjectsProjectIdRouteImport } from './routes/dashboard/projects/$projectId'
 
@@ -60,6 +61,11 @@ const DashboardKeysIndexRoute = DashboardKeysIndexRouteImport.update({
   path: '/keys/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardBillingIndexRoute = DashboardBillingIndexRouteImport.update({
+  id: '/billing/',
+  path: '/billing/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardAuditIndexRoute = DashboardAuditIndexRouteImport.update({
   id: '/audit/',
   path: '/audit/',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
+  '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
   '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit': typeof DashboardAuditIndexRoute
+  '/dashboard/billing': typeof DashboardBillingIndexRoute
   '/dashboard/keys': typeof DashboardKeysIndexRoute
   '/dashboard/projects': typeof DashboardProjectsIndexRoute
   '/dashboard/webhooks': typeof DashboardWebhooksIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/projects/$projectId': typeof DashboardProjectsProjectIdRoute
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
+  '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
   '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit/'
+    | '/dashboard/billing/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
     | '/dashboard/webhooks/'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit'
+    | '/dashboard/billing'
     | '/dashboard/keys'
     | '/dashboard/projects'
     | '/dashboard/webhooks'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/projects/$projectId'
     | '/dashboard/audit/'
+    | '/dashboard/billing/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
     | '/dashboard/webhooks/'
@@ -211,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardKeysIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/billing/': {
+      id: '/dashboard/billing/'
+      path: '/billing'
+      fullPath: '/dashboard/billing/'
+      preLoaderRoute: typeof DashboardBillingIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/audit/': {
       id: '/dashboard/audit/'
       path: '/audit'
@@ -232,6 +251,7 @@ interface DashboardRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardProjectsProjectIdRoute: typeof DashboardProjectsProjectIdRoute
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
+  DashboardBillingIndexRoute: typeof DashboardBillingIndexRoute
   DashboardKeysIndexRoute: typeof DashboardKeysIndexRoute
   DashboardProjectsIndexRoute: typeof DashboardProjectsIndexRoute
   DashboardWebhooksIndexRoute: typeof DashboardWebhooksIndexRoute
@@ -241,6 +261,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardProjectsProjectIdRoute: DashboardProjectsProjectIdRoute,
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
+  DashboardBillingIndexRoute: DashboardBillingIndexRoute,
   DashboardKeysIndexRoute: DashboardKeysIndexRoute,
   DashboardProjectsIndexRoute: DashboardProjectsIndexRoute,
   DashboardWebhooksIndexRoute: DashboardWebhooksIndexRoute,
