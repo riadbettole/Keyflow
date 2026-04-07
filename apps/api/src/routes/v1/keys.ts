@@ -7,6 +7,7 @@ import { logger } from '../../lib/logger'
 import { mongo } from '../../lib/mongo'
 import { checkRateLimit } from '../../lib/rate-limiter'
 import { redis } from '../../lib/redis'
+import { fireWebhooks } from '../../lib/webhooks'
 
 export const keysRouter = new Hono()
 
@@ -83,7 +84,6 @@ keysRouter.post('/verify', async (c) => {
 	c.header('X-RateLimit-Remaining', String(rateLimitResult.remaining))
 
 	if (!rateLimitResult.allowed) {
-		// Retry-After tells the client exactly how many seconds to wait
 		c.header('Retry-After', String(rateLimitResult.retryAfter))
 
 		logger.warn(
@@ -93,6 +93,13 @@ keysRouter.post('/verify', async (c) => {
 			},
 			'Rate limit exceeded',
 		)
+
+		// fire webhook — non-blocking, never affects response time
+		fireWebhooks(keyData.referenceId, {
+			type: 'key.rate_limit_exceeded',
+			keyId: keyData.id,
+			projectId: keyData.projectId,
+		}).catch((err) => logger.error({ err, keyId: keyData.id }, 'Webhook fire failed'))
 
 		return c.json(
 			{

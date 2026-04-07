@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardWebhooksIndexRouteImport } from './routes/dashboard/webhooks/index'
 import { Route as DashboardProjectsIndexRouteImport } from './routes/dashboard/projects/index'
 import { Route as DashboardKeysIndexRouteImport } from './routes/dashboard/keys/index'
 import { Route as DashboardAuditIndexRouteImport } from './routes/dashboard/audit/index'
@@ -42,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardWebhooksIndexRoute = DashboardWebhooksIndexRouteImport.update({
+  id: '/webhooks/',
+  path: '/webhooks/',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardProjectsIndexRoute = DashboardProjectsIndexRouteImport.update({
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/dashboard/audit': typeof DashboardAuditIndexRoute
   '/dashboard/keys': typeof DashboardKeysIndexRoute
   '/dashboard/projects': typeof DashboardProjectsIndexRoute
+  '/dashboard/webhooks': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/dashboard/audit/': typeof DashboardAuditIndexRoute
   '/dashboard/keys/': typeof DashboardKeysIndexRoute
   '/dashboard/projects/': typeof DashboardProjectsIndexRoute
+  '/dashboard/webhooks/': typeof DashboardWebhooksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/dashboard/audit/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
+    | '/dashboard/webhooks/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/dashboard/audit'
     | '/dashboard/keys'
     | '/dashboard/projects'
+    | '/dashboard/webhooks'
   id:
     | '__root__'
     | '/'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/dashboard/audit/'
     | '/dashboard/keys/'
     | '/dashboard/projects/'
+    | '/dashboard/webhooks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/webhooks/': {
+      id: '/dashboard/webhooks/'
+      path: '/webhooks'
+      fullPath: '/dashboard/webhooks/'
+      preLoaderRoute: typeof DashboardWebhooksIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/projects/': {
       id: '/dashboard/projects/'
       path: '/projects'
@@ -215,6 +234,7 @@ interface DashboardRouteChildren {
   DashboardAuditIndexRoute: typeof DashboardAuditIndexRoute
   DashboardKeysIndexRoute: typeof DashboardKeysIndexRoute
   DashboardProjectsIndexRoute: typeof DashboardProjectsIndexRoute
+  DashboardWebhooksIndexRoute: typeof DashboardWebhooksIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -223,6 +243,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAuditIndexRoute: DashboardAuditIndexRoute,
   DashboardKeysIndexRoute: DashboardKeysIndexRoute,
   DashboardProjectsIndexRoute: DashboardProjectsIndexRoute,
+  DashboardWebhooksIndexRoute: DashboardWebhooksIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
