@@ -124,4 +124,11 @@ export const apiKeysRouter = router({
 
 		return { success: true }
 	}),
+
+	listAll: orgProcedure.query(async ({ ctx }) => {
+		const keys = await ctx.db.query.projectKeys.findMany({
+			where: eq(projectKeys.organizationId, ctx.organizationId),
+		})
+		return keys
+	}),
 })
