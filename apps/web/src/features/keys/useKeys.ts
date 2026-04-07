@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { trpc } from '@/shared/lib/trpc'
 
 export function useKeys() {
@@ -11,6 +12,9 @@ export function useCreateKey() {
 		onSuccess: () => {
 			utils.apiKeys.list.invalidate()
 		},
+		onError: () => {
+			toast.error('Failed to create API key')
+		},
 	})
 }
 
@@ -20,6 +24,10 @@ export function useRevokeKey() {
 	return trpc.apiKeys.revoke.useMutation({
 		onSuccess: () => {
 			utils.apiKeys.list.invalidate()
+			toast.success('API key revoked')
+		},
+		onError: () => {
+			toast.error('Failed to revoke key')
 		},
 	})
 }
