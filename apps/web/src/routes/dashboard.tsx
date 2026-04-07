@@ -128,6 +128,16 @@ const navItems = [
 function DashboardLayout() {
 	const router = useRouter()
 
+	const { data: session } = authClient.useSession()
+	const userName = session?.user?.name ?? 'User'
+	const userInitials = userName
+		.split(' ')
+		.map((n: string) => n[0])
+		.join('')
+		.toUpperCase()
+		.slice(0, 2)
+	const orgName = session?.session?.activeOrganizationId ? 'My Workspace' : 'Keyflow'
+
 	useEffect(() => {
 		async function checkSession() {
 			const session = await authClient.getSession()
@@ -174,7 +184,7 @@ function DashboardLayout() {
 							activeProps={{
 								className: cn(
 									'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
-									'bg-gray-800 text-gray-100',
+									'bg-gray-800 text-gray-100 border-l-2 border-indigo-500 pl-[10px]',
 								),
 							}}
 						>
@@ -184,14 +194,26 @@ function DashboardLayout() {
 					))}
 				</nav>
 
-				<div className="p-2 border-t border-gray-700">
+				<div className="p-3 border-t border-gray-700 space-y-1">
+					{/* User info */}
+					<div className="flex items-center gap-3 px-3 py-2 mb-1">
+						<div className="w-7 h-7 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
+							<span className="text-xs font-semibold text-indigo-400">{userInitials}</span>
+						</div>
+						<div className="flex-1 min-w-0">
+							<p className="text-xs font-medium text-gray-300 truncate">{userName}</p>
+							<p className="text-xs text-gray-600 truncate">{session?.user?.email}</p>
+						</div>
+					</div>
+
+					{/* Sign out */}
 					<button
 						onClick={handleSignOut}
-						className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+						className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-500 hover:text-gray-300 hover:bg-gray-800 transition-colors"
 					>
 						<svg
-							width="16"
-							height="16"
+							width="14"
+							height="14"
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
@@ -208,7 +230,7 @@ function DashboardLayout() {
 
 			<main className="flex-1 flex flex-col min-w-0">
 				<header className="h-14 border-b border-gray-700 flex items-center px-6">
-					<p className="text-sm text-gray-400">Dev Org</p>
+					<p className="text-sm font-medium text-gray-300">{orgName}</p>
 				</header>
 				<div className="flex-1 p-6">
 					<Outlet />
