@@ -1,29 +1,36 @@
-# Architecture Decisions
+rkdown# Architecture Decisions
 
-## Why three databases?
+## Three databases
 
-Each database is used where its model fits naturally.
+Postgres handles relational data — users, organizations, projects, API keys. These have real relationships, need foreign keys, and payment operations need ACID guarantees. It's the source of truth.
 
-**Postgres** — relational core data. Users, organizations, projects, API keys all have clear relationships and need ACID guarantees. Foreign keys and constraints matter here.
+Redis handles two things: the API key cache (5 minute TTL, cache-aside pattern) and the rate limiter (sorted sets for sliding window). Both need microsecond access times. Redis is in-memory and purpose-built for exactly this.
 
-**Redis** — ephemeral, high-performance data. Rate limit counters and API key cache need microsecond access times. Redis is in-memory and purpose-built for this.
+MongoDB handles audit logs and usage logs. These are append-only collections where each document has a different shape depending on the event type — a project.created event looks nothing like a key.rate_limit_exceeded event. A document store is more natural here than forcing a rigid SQL schema. Neither collection is ever updated, only inserted.
 
-**MongoDB** — flexible document store. Audit logs and usage logs have varying shapes depending on the event type. A document store handles this more naturally than rigid SQL columns, and these collections are append-only which plays to MongoDB's strengths.
+## tRPC and REST coexisting
 
-## Why tRPC + REST?
+The dashboard uses tRPC — full end-to-end type safety, input and output types shared automatically, TypeScript catches breaking changes at compile time. No manually maintained API types.
 
-tRPC gives end-to-end type safety between the dashboard frontend and the API — input and output types are shared automatically, no manual type definitions, TypeScript catches breaking changes at compile time.
+REST `/v1` exists for the SDK and CLI. External developers can't import your tRPC router, and they shouldn't have to. Same backend logic, two transport layers. tRPC for internal consumers, REST for external ones.
 
-REST `/v1` exists because external developers using the SDK can't import a tRPC router. They need a stable, versioned HTTP API. Same backend logic, two transport layers.
+## Better Auth over custom auth
 
-## Why Better Auth instead of custom auth?
+RBAC, organization management, session handling, API key lifecycle — these are solved problems. The engineering effort here goes into what's actually unique: the sliding window rate limiter, the webhook delivery system, the cache-aside pattern. Better Auth handles the plumbing so we don't have to.
 
-RBAC, organization management, session handling, and API key lifecycle are solved problems. Engineering effort goes into the features that are unique to this platform — the rate limiter, the usage tracking, the webhook system. Better Auth handles the plumbing.
+## Bun
 
-## Why Bun?
+Fast installs, fast runtime, native TypeScript. No ts-node, no transpilation, no separate test runner needed. The whole toolchain is simpler and the monorepo builds faster because of it.
 
-Fast installs, fast runtime, built-in test runner, native TypeScript. The whole toolchain is simpler — no ts-node, no transpilation step, no separate test framework needed.
+## Turborepo
 
-## Why Turborepo?
+Four separate consumers of shared code — API, frontend, SDK, CLI — all in one repo. Turborepo manages the build graph so shared packages only rebuild when they change, dev servers run in parallel, and CI caches correctly across runs.
 
-The project has four distinct consumers of shared code — API, frontend, SDK, CLI. Turborepo manages the build graph so shared packages rebuild only when changed, dev runs in parallel across apps, and the CI pipeline caches correctly.
+## Stripe idempotency
+
+Stripe can deliver the same webhook multiple times. Every processed event ID is stored in a processed_events table. Before handling any event we check this table — duplicates are acknowledged and skipped. This means payment operations are safe under retry storms without any additional coordination.
+
+## Active organization on session
+
+Better Auth stores activeOrganizationId on the session rather than the user, which supports multi-org users but requires explicitly setting it on each new session. Keyflow handles this via a `/v1/auth/activate` endpoint that all clients call after login — browser, CLI, and future SDK integrations. This centralizes the logic instead of duplicating workarounds per client.
+
