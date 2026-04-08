@@ -3,9 +3,21 @@ import * as z from 'zod'
 
 export const env = createEnv({
 	server: {
-		DATABASE_URL: z.string().startsWith('postgresql://'),
-		REDIS_URL: z.string().startsWith('redis://'),
-		MONGODB_URL: z.string().startsWith('mongodb://'),
+		DATABASE_URL: z
+			.string()
+			.refine((val) => val.startsWith('postgresql://') || val.startsWith('postgres://'), {
+				message: 'Must be a valid PostgreSQL connection string',
+			}),
+		REDIS_URL: z
+			.string()
+			.refine((val) => val.startsWith('redis://') || val.startsWith('rediss://'), {
+				message: 'Must be a valid Redis connection string',
+			}),
+		MONGODB_URL: z
+			.string()
+			.refine((val) => val.startsWith('mongodb://') || val.startsWith('mongodb+srv://'), {
+				message: 'Must be a valid MongoDB connection string',
+			}),
 		STRIPE_SECRET_KEY: z.string().startsWith('sk_'),
 		STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_'),
 		STRIPE_PRO_PRICE_ID: z.string().startsWith('price_'),
