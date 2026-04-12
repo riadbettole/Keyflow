@@ -61,6 +61,17 @@ export const auth = betterAuth({
 			},
 		},
 	},
+	advanced: {
+		cookiePrefix: 'keyflow',
+		cookies: {
+			session_token: {
+				attributes: {
+					sameSite: 'none',
+					secure: true,
+				},
+			},
+		},
+	},
 	plugins: [
 		admin(),
 		organization({

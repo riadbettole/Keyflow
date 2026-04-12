@@ -24,6 +24,27 @@ export function useRegister() {
 			return
 		}
 
+		const token = result.data?.token
+
+		if (token) {
+			const orgs = await authClient.organization.list({
+				fetchOptions: {
+					headers: { Authorization: `Bearer ${token}` },
+					credentials: 'include',
+				},
+			})
+
+			if (orgs.data && orgs.data.length > 0) {
+				await authClient.organization.setActive({
+					organizationId: orgs.data[0].id,
+					fetchOptions: {
+						headers: { Authorization: `Bearer ${token}` },
+						credentials: 'include',
+					},
+				})
+			}
+		}
+
 		await signIn.email({
 			email: input.email,
 			password: input.password,

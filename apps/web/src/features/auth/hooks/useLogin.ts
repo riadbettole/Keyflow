@@ -15,6 +15,9 @@ export function useLogin() {
 		const result = await signIn.email({
 			email: input.email,
 			password: input.password,
+			fetchOptions: {
+				credentials: 'include',
+			},
 		})
 
 		if (result.error) {
@@ -23,11 +26,26 @@ export function useLogin() {
 			return
 		}
 
-		const orgs = await authClient.organization.list()
-		if (orgs.data && orgs.data.length > 0) {
-			await authClient.organization.setActive({
-				organizationId: orgs.data[0].id,
+		// Use the token from the result directly
+		const token = result.data?.token
+
+		if (token) {
+			const orgs = await authClient.organization.list({
+				fetchOptions: {
+					headers: { Authorization: `Bearer ${token}` },
+					credentials: 'include',
+				},
 			})
+
+			if (orgs.data && orgs.data.length > 0) {
+				await authClient.organization.setActive({
+					organizationId: orgs.data[0].id,
+					fetchOptions: {
+						headers: { Authorization: `Bearer ${token}` },
+						credentials: 'include',
+					},
+				})
+			}
 		}
 
 		router.navigate({ to: '/dashboard' })
