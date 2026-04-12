@@ -1,18 +1,6 @@
 {
 	"rewrites": [
 		{
-			"source": "/api/:path*",
-			"destination": "https://keyflow-tx96.onrender.com/api/:path*"
-		},
-		{
-			"source": "/trpc/:path*",
-			"destination": "https://keyflow-tx96.onrender.com/trpc/:path*"
-		},
-		{
-			"source": "/v1/:path*",
-			"destination": "https://keyflow-tx96.onrender.com/v1/:path*"
-		},
-		{
 			"source": "/(.*)",
 			"destination": "/index.html"
 		}
